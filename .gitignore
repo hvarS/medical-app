@@ -1,0 +1,7 @@
+*.pyc
+yolov5/runs/detect/*
+temp_saver/*/*.png
+temp_saver/*/*/*/*.png
+temp_saver/*/*/*.json
+temp_saver/*/*/*.png
+temp_saver/*/*.json

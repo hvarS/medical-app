@@ -1,0 +1,30 @@
+---
+model_path: /scratch  # Saving location
+log_path: logs/weights20
+weights_paths: ["../data/weights/weights16.h5"]  # Loading locations
+encoder_weights: null  # Weights specifically to initialise the encoder
+data_root: ../data/Segmentation_Data/
+train_path: ../data/Segmentation_Data/Lists/train300.txt
+valid_path: ../data/Segmentation_Data/Lists/valid40.txt
+ckpt_path: checkpoints/
+
+# Parameters
+image_size: [640, 512]  # Original: (2448, 1920)
+mode: seg
+target_classes: ["Good Crypts", "Good Villi", "Epithelium", "Brunner's Gland", "Circular Crypts"]
+# target_classes: ["Epithelium"]
+# filter_classes: ["Epithelium"]  # Train only with items containing them
+filter_classes: ["Good Crypts", "Good Villi", "Epithelium", "Brunner's Gland", "Circular Crypts"]
+use_edges: False
+multiplier: 10
+freeze_encoder: False
+freeze_decoder: False
+load_last_layer: True
+batch_size: 8
+workers: 8
+lr: 0.001
+epochs: 100
+overload: True  # If RAM available, load entire data into RAM,
+save_ckpt: True
+amp: True
+  
