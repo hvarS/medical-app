@@ -1366,7 +1366,18 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 clsscnt[lbl] += 1
             points = shape.points
-            
+
+            ## Removing Duplicate Points in the Annotations
+            new_points_list = []
+            new_points_list.insert(0,points[0])
+            for i,_ in enumerate(points):
+                if i != 0:
+                    if points[i]==points[i-1]:
+                        continue
+                    else:
+                        new_points_list.append(points[i])
+            shape.points = new_points_list
+            ###############################################
 
             dist = 0
             prev_point = int(points[0].x()),int(points[0].y())
