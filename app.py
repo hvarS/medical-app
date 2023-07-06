@@ -832,6 +832,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.label_dock.toggleViewAction(),
                 self.shape_dock.toggleViewAction(),
                 self.file_dock.toggleViewAction(),
+                self.stats_dock.toggleViewAction(),
                 None,
                 fill_drawing,
                 None,
