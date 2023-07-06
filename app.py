@@ -1352,6 +1352,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selectCalibrationOption()
         if self.mode == 'LM':
             self.toggleDrawMode(False, createMode='linestrip')
+        elif self.mode == "ANNOTATE":
+            self.toggleDrawMode(False, createMode="linestrip")
 
     def actualMeasurement(self):
         clssdict = {}
@@ -1380,10 +1382,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 CALIBRATION_CONSTANT = self.CUSTOM_CALIBRATION
 
 
-            shape.other_data['Measured: '+str(lbl)+'['+str(clsscnt[lbl])+']'] = str(round(dist * CALIBRATION_CONSTANT))+' µm'
+            shape.other_data['Measured: '+str(lbl)+'['+str(clsscnt[lbl])+']'] = str(round(dist * CALIBRATION_CONSTANT,4)) + ' µm'
             shape.other_data['Pixel Length'] = str(round(dist))
 
-            clssdict['Measured: '+str(lbl)+'['+str(clsscnt[lbl])+']'] = str(round(dist * CALIBRATION_CONSTANT))+' µm'
+            clssdict['Measured Label -> '+str(lbl)+'['+str(clsscnt[lbl])+']'] = '\t'+ \
+                                                                        str(round(dist * CALIBRATION_CONSTANT,4)) +\
+                                                                        ' µm'
 
         self.statsDict = clssdict
         self.addStats()

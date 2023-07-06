@@ -63,23 +63,28 @@ class calibrationSelection(object):
         self.parent.recalibrationMode()
 
     def clicked_4x(self):
+        self.parent.mode = "ANNOTATE"
         self.CALIBRATION_INDEX = 0
         self.dialog.close()
 
 
     def clicked_10x(self):
+        self.parent.mode = "ANNOTATE"
         self.CALIBRATION_INDEX = 1
         self.dialog.close()
 
     def clicked_20x(self):
+        self.parent.mode = "ANNOTATE"
         self.CALIBRATION_INDEX = 2
         self.dialog.close()
     
     def clicked_40x(self):
+        self.parent.mode = "ANNOTATE"
         self.CALIBRATION_INDEX = 3
         self.dialog.close()
     
     def clicked_100x(self):
+        self.parent.mode = "ANNOTATE"
         self.CALIBRATION_INDEX = 4
         self.dialog.close()
 
