@@ -139,9 +139,7 @@ class LabelDialog(QtWidgets.QDialog):
             pass
         
     def clearLabelHistory(self):
-        print(self.labelList.count())
         self.labelList.clear()
-        print(self.labelList.count())
 
     def validate(self):
         text = self.edit.text()

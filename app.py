@@ -154,6 +154,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.stats_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
         self.stats_dock.setWidget(self.stats_list_widget)
         self.stats_dock.setObjectName("aiStatistics")
+        self.stats_list_widget.model().rowsInserted.connect(self.statsDockDataChange)
+        self.stats_list_widget.model().rowsRemoved.connect(self.statsDockDataChange)
         
 
         self.flag_dock = self.flag_widget = None
@@ -686,7 +688,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         fill_drawing.trigger()
 
-        # Lavel list context menu.
+        # Label list context menu.
         labelMenu = QtWidgets.QMenu()
         utils.addActions(labelMenu, (edit, delete))
         self.labelList.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -1920,6 +1922,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self._copied_shapes = [s.copy() for s in self.canvas.selectedShapes]
         self.actions.paste.setEnabled(len(self._copied_shapes) > 0)
 
+    def statsDockDataChange(self):
+        self.actions.save.setEnabled(True)
+
     def labelSelectionChanged(self):
         if self._noSelectionSlot:
             return
@@ -1954,6 +1959,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def labelOrderChanged(self):
         self.setDirty()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
+
+
 
     # Callback functions:
 
