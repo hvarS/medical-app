@@ -140,6 +140,10 @@ class Canvas(QtWidgets.QWidget):
         if len(self.shapesBackups) > self.num_backups:
             self.shapesBackups = self.shapesBackups[-self.num_backups - 1 :]
         self.shapesBackups.append(shapesBackup)
+    
+    def clearShapes(self):
+        self.shapes.clear()
+        self.shapesBackups.clear()
 
     @property
     def isShapeRestorable(self):
@@ -155,7 +159,7 @@ class Canvas(QtWidgets.QWidget):
         # The complete process is also done in app.py::undoShapeEdit
         # and app.py::loadShapes and our own Canvas::loadShapes function.
         if not self.isShapeRestorable:
-            return
+            return False
         self.shapesBackups.pop()  # latest
 
         # The application will eventually call Canvas.loadShapes which will
@@ -166,6 +170,7 @@ class Canvas(QtWidgets.QWidget):
         for shape in self.shapes:
             shape.selected = False
         self.update()
+        return True
 
     def enterEvent(self, ev):
         self.overrideCursor(self._cursor)

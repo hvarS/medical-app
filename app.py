@@ -1031,7 +1031,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setDirty(self):
         # Even if we autosave the file, we keep the ability to undo
-        self.actions.undo.setEnabled(self.canvas.isShapeRestorable)
+        # self.actions.undo.setEnabled(self.canvas.isShapeRestorable)
+        self.actions.undo.setEnabled(True)
 
         if self._config["auto_save"] or self.actions.saveAuto.isChecked():
             label_file = osp.splitext(self.imagePath)[0] + ".json"
@@ -1117,10 +1118,15 @@ class MainWindow(QtWidgets.QMainWindow):
     # Callbacks
 
     def undoShapeEdit(self):
-        self.canvas.restoreShape()
+        canLoad = self.canvas.restoreShape()
         self.labelList.clear()
-        self.loadShapes(self.canvas.shapes)
+        if canLoad:
+            self.loadShapes(self.canvas.shapes)
+        else:
+            self.canvas.deleteShape(self.canvas.shapes[0])
         self.actions.undo.setEnabled(self.canvas.isShapeRestorable)
+        self.actualMeasurement()
+
 
     def tutorial(self):
         url = "https://github.com/wkentaro/labelme/tree/main/examples/tutorial"  # NOQA
@@ -1332,6 +1338,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.undoLastLine()
         self.canvas.undoLastPoint()
         self.toggleDrawMode(False, createMode='linestrip')
+        self.canvas.clearShapes()
         self.mode = 'LM'
 
     def recalibrationMode(self):
