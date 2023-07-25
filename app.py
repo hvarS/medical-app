@@ -1096,8 +1096,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.resetState()
         self.canvas.unsetIRMode()
 
-
-
     def resetRightColumn(self):
         self.labelList.clear()
         self.uniqLabelListCheckable.clear()
@@ -1131,7 +1129,6 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.actualMeasurement()
 
-
     def tutorial(self):
         url = "https://github.com/wkentaro/labelme/tree/main/examples/tutorial"  # NOQA
         webbrowser.open(url)
@@ -1145,9 +1142,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actions.undoLastPoint.setEnabled(drawing)
         self.actions.undo.setEnabled(not drawing)
         self.actions.delete.setEnabled(not drawing)
-
-    
-
 
     def toggleDrawMode(self, edit=True, createMode="polygon"):
         self.canvas.setEditing(edit)
@@ -1329,7 +1323,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.setFocus()
         self.status(str(self.tr("Loaded %s")) % osp.basename(str(filename)))
 
-
     def popup_recalibration_dialog(self, distpix):
         Select = QtWidgets.QDialog()
         pmap = self.canvas.pixmap.size()
@@ -1348,7 +1341,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def recalibrationMode(self):
         self.mode = 'RECAL'
         self.toggleDrawMode(False,'line')
-
 
     def selectCalibrationOption(self):
         self.mode = 'CALPOPUP'
@@ -1441,7 +1433,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if "IR" not in all_labels:
             self.toggleDrawMode(False,createMode)
         
-
     def get_trimask(self):
         img_name = self.openImage.split('/')[-1][:-4]
         mask_root = os.path.join(os.getcwd(),'temp_saver','masks',img_name)
@@ -1521,8 +1512,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.display(self.openJson)
 
-    
-
     def get_corrected_interpretable_image_mask(self):
         temp_save_dir = os.path.join(os.getcwd(),'temp_saver','results','counting_images')
         if not os.path.exists(temp_save_dir):
@@ -1551,7 +1540,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         cv2.imwrite(img_write_path,interpretable_img)
         return img_write_path
-
 
     def iel_counting(self):
         
@@ -1698,8 +1686,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def clearStats(self):
         self.stats_list_widget.clear()
-
-
     # React to canvas signals.
     def shapeSelectionChanged(self, selected_shapes):
         self._noSelectionSlot = True
@@ -1724,7 +1710,6 @@ class MainWindow(QtWidgets.QMainWindow):
         for key, value in self.statsDict.items():
             self.stats_list_widget.addItem(f'{key}: {value}')
         
-
     def addLabel(self, shape):
         if shape.group_id is None:
             text = shape.label
@@ -1976,9 +1961,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def labelOrderChanged(self):
         self.setDirty()
         self.canvas.loadShapes([item.shape() for item in self.labelList])
-
-
-
     # Callback functions:
 
     ## Addition: Setting CallBack to IR by default for IR Mode
@@ -2656,6 +2638,10 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.noShapes():
                 for action in self.actions.onShapesPresent:
                     action.setEnabled(False)
+            
+            if self.mode == "ANNOTATE":
+                self.actualMeasurement()
+                self.toggleDrawMode(False, createMode='linestrip')
 
     def copyShape(self):
         self.canvas.endMove(copy=True)
