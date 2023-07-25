@@ -1124,9 +1124,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelList.clear()
         if canLoad:
             self.loadShapes(self.canvas.shapes)
+            self.actions.undo.setEnabled(True)
         else:
             self.canvas.deleteShape(self.canvas.shapes[0])
-        self.actions.undo.setEnabled(self.canvas.isShapeRestorable)
+            self.actions.undo.setEnabled(False)
+        
         self.actualMeasurement()
 
 
@@ -1368,6 +1370,14 @@ class MainWindow(QtWidgets.QMainWindow):
         clssdict = {}
         clsscnt = {}
 
+        try:
+            self.backupDict
+        except:
+            self.backupDict = {}
+        
+        if self.backupDict != {}:
+            self.backupDict = self.statsDict
+
         for shape in self.canvas.shapes:
             lbl = shape.label
             if  lbl not in clsscnt:
@@ -1408,6 +1418,7 @@ class MainWindow(QtWidgets.QMainWindow):
             clssdict['Measured Label -> '+str(lbl)+'['+str(clsscnt[lbl])+']'] = '\t'+ \
                                                                         str(round(dist * CALIBRATION_CONSTANT,4)) +\
                                                                         ' µm'
+
 
         self.statsDict = clssdict
         self.addStats()
@@ -1841,8 +1852,14 @@ class MainWindow(QtWidgets.QMainWindow):
             shape.flags.update(flags)
             shape.other_data = other_data
 
+            for k,v in other_data.items():
+                if 'Measured' in k:
+                    self.statsDict[k] = v
+
+
             s.append(shape)
         self.loadShapes(s)
+        self.addStats()
 
     def loadFlags(self, flags):
         self.flag_widget.clear()
