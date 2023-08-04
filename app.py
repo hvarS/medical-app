@@ -9,6 +9,7 @@ import re
 import webbrowser
 import imgviz
 import natsort
+import copy
 from qtpy import QtCore
 from qtpy.QtCore import Qt
 from qtpy import QtGui
@@ -357,6 +358,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.tr("Calculate the Length Measurement"),
             enabled=False,
         )
+        
+        resetAIAction = action(
+            self.tr("&Reset AI Action"),
+            lambda: self.resetAIAction(),
+            shortcuts["resetAIAction"],
+            "resetAIAction",
+            self.tr("Reload the Current Image and Reset any AI Actions Performed"),
+            enabled=False,
+        )
+        
 
         recalibrationMode = action(
             self.tr("&Re-Calibrate"),
@@ -720,6 +731,7 @@ class MainWindow(QtWidgets.QMainWindow):
             countIEL = countIEL,
             interpretableRegionMode = interpretableRegionMode,
             e2eMode = e2eMode,
+            resetAIAction = resetAIAction,
             close=close,
             deleteFile=deleteFile,
             toggleKeepPrevMode=toggle_keep_prev_mode,
@@ -751,6 +763,7 @@ class MainWindow(QtWidgets.QMainWindow):
             openPrevImg=openPrevImg,
             fileMenuActions=(open_, opendir, save, saveAs, close, quit),
             aiActions = (tissueMode, interpretableRegionMode,segmentMode, countIEL, e2eMode),
+            lengthMeasurementActions =(lengthMeasurementMode, actualMeasurement),
             tool=(),
             # XXX: need to add some actions here to activate the shortcut
             editMenu=(
@@ -760,6 +773,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 None,
                 undo,
                 undoLastPoint,
+                None,
+                resetAIAction,
                 None,
                 removePoint,
                 None,
@@ -783,6 +798,16 @@ class MainWindow(QtWidgets.QMainWindow):
                 undoLastPoint,
                 removePoint,
             ),
+            onResetAIAction=(
+                close,
+                editMode,
+                brightnessContrast,
+                lengthMeasurementMode,
+                actualMeasurement,
+                recalibrationMode,
+                tissueMode,
+                e2eMode,
+            ),
             onLoadActive=(
                 close,
                 createMode,
@@ -801,12 +826,18 @@ class MainWindow(QtWidgets.QMainWindow):
             ),
             onTissueModeCompletion=(
                 interpretableRegionMode,
+                resetAIAction,
             ),
             onIRModeCompletion=(
+                resetAIAction,
                 segmentMode,
             ),
             onSegmentModeCompletion=(
+                resetAIAction,
                 countIEL,
+            ),
+            onIELCountingCompletion=(
+                resetAIAction,            
             ),
             onShapesPresent=(saveAs, hideAll, showAll),
             onLengthMeasurementModeActivation=(lengthMeasurementMode,),
@@ -920,6 +951,7 @@ class MainWindow(QtWidgets.QMainWindow):
             lengthMeasurementMode,
             None,
             ###################################################
+            resetAIAction,
             tissueMode,
             interpretableRegionMode,
             segmentMode,
@@ -1137,6 +1169,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def toggleAllAIActionsDisabled(self):
         for action in self.actions.aiActions:
+            action.setEnabled(False)
+    
+    def toggleAllMeasurementActionsDisabled(self):
+        for action in self.actions.lengthMeasurementActions:
             action.setEnabled(False)
     # Callbacks
 
@@ -1443,6 +1479,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.statsDict = clssdict
         self.addStats()
 
+    def resetAIAction(self):
+        self.toggleAllAIActionsDisabled()
+        self.toggleAllMeasurementActionsDisabled()
+        for action in self.actions.onResetAIAction:
+            action.setEnabled(True)
+
+        self.openImage = self.originalOpenImage
+        return self.loadFile(self.openImage)
+
+
+
     def interpretableRegionMode(self, edit=True, createMode="rectangle"):
         self.mode = 'IR'
         self.resetRightColumn()
@@ -1462,6 +1509,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.toggleDrawMode(False,createMode)
 
         self.toggleAllAIActionsDisabled()
+        self.toggleAllMeasurementActionsDisabled()
 
         for action in self.actions.onIRModeCompletion:
             action.setEnabled(True)
@@ -1503,12 +1551,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def tissueMode(self):
         """Addition: In Progress"""
         self.resetState()
+        self.originalOpenImage = copy.deepcopy(self.openImage)
         json_filename, display_filename = magic(self.openImage)
         self.openImage = self.uniform_path(display_filename)
         self.openJson = self.uniform_path(json_filename)
         self.display(json_filename)
 
         self.toggleAllAIActionsDisabled()
+        self.toggleAllMeasurementActionsDisabled()
 
         for action in self.actions.onTissueModeCompletion:
             action.setEnabled(True)
@@ -1551,6 +1601,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.display(self.openJson)
 
         self.toggleAllAIActionsDisabled()
+        self.toggleAllMeasurementActionsDisabled()
 
         for action in self.actions.onSegmentModeCompletion:
             action.setEnabled(True)
@@ -1604,6 +1655,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addStatsBool = True
         self.afterIRMode = False
 
+        self.toggleAllAIActionsDisabled()
+        self.toggleAllMeasurementActionsDisabled()
+
+        for action in self.actions.onIELCountingCompletion:
+            action.setEnabled(True)
+
     def fillStatsAfterCounting(self):
         self.statsDict = {}
 
@@ -1623,6 +1680,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def e2eMode(self):
         ## Segmentation into tissues
         self.resetState()
+        self.originalOpenImage = copy.deepcopy(self.openImage)
         json_filename, display_filename = magic(self.openImage)
         self.openImage = self.uniform_path(display_filename)
         self.openJson = self.uniform_path(json_filename)
@@ -1672,6 +1730,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addStatsBool = True
         self.afterIRMode = False
 
+        self.toggleAllAIActionsDisabled()
+        self.toggleAllMeasurementActionsDisabled()
+
+        for action in self.actions.onIELCountingCompletion:
+            action.setEnabled(True)
 
     def setEditMode(self):
         self.toggleDrawMode(True)
@@ -2629,6 +2692,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resetState()
         self.setClean()
         self.toggleActions(False)
+        self.toggleAllAIActionsDisabled()
+        self.toggleAllMeasurementActionsDisabled()
+        for action in self.actions.onIELCountingCompletion:
+            action.setEnabled(_value)
         self.canvas.setEnabled(False)
         self.actions.saveAs.setEnabled(False)
 
