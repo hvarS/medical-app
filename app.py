@@ -2632,9 +2632,33 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             self.fileListWidget.repaint()
 
+    def sanityCheckForMeasurement(self):
+            
+        mb = QtWidgets.QMessageBox
+        msg = self.tr('Calculate measurements also before saving?')
+        answer = mb.question(
+            self,
+            self.tr("Save measurements?"),
+            msg,
+            mb.Save | mb.Discard | mb.Cancel,
+            mb.Save,
+        )
+        if answer == mb.Discard:
+            return True
+        elif answer == mb.Save:
+            self.actualMeasurement()
+            self._saveFile(self.saveFileDialog())
+            return True
+        else:  # answer == mb.Cancel
+            return False
+
+
     def saveFile(self, _value=False):
         assert not self.image.isNull(), "cannot save empty image"
-        if self.labelFile:
+        if self.mode == 'ANNOTATE' and (len(self.canvas.shapes) != len(self.statsDict)):
+            self.sanityCheckForMeasurement()
+            return 
+        elif self.labelFile:
             # DL20180323 - overwrite when in directory
             self._saveFile(self.labelFile.filename)
         elif self.output_file:
