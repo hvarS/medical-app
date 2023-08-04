@@ -367,6 +367,15 @@ class MainWindow(QtWidgets.QMainWindow):
             enabled=False,
         )
 
+        e2eMode = action(
+            self.tr("&End To End Detection"),
+            lambda: self.e2eMode(),
+            shortcuts["e2e"],
+            "e2e",
+            self.tr("Auto Detect IR, Villi Tip and Count IEL based on AI"),
+            enabled=False,
+        )
+
         #######################################################
         save = action(
             self.tr("&Save"),
@@ -710,6 +719,7 @@ class MainWindow(QtWidgets.QMainWindow):
             tissueMode = tissueMode,
             countIEL = countIEL,
             interpretableRegionMode = interpretableRegionMode,
+            e2eMode = e2eMode,
             close=close,
             deleteFile=deleteFile,
             toggleKeepPrevMode=toggle_keep_prev_mode,
@@ -740,7 +750,7 @@ class MainWindow(QtWidgets.QMainWindow):
             openNextImg=openNextImg,
             openPrevImg=openPrevImg,
             fileMenuActions=(open_, opendir, save, saveAs, close, quit),
-            aiActions = (tissueMode, interpretableRegionMode,segmentMode, countIEL),
+            aiActions = (tissueMode, interpretableRegionMode,segmentMode, countIEL, e2eMode),
             tool=(),
             # XXX: need to add some actions here to activate the shortcut
             editMenu=(
@@ -787,11 +797,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 actualMeasurement,
                 recalibrationMode,
                 tissueMode,
+                e2eMode,
+            ),
+            onTissueModeCompletion=(
                 interpretableRegionMode,
+            ),
+            onIRModeCompletion=(
                 segmentMode,
+            ),
+            onSegmentModeCompletion=(
                 countIEL,
             ),
             onShapesPresent=(saveAs, hideAll, showAll),
+            onLengthMeasurementModeActivation=(lengthMeasurementMode,),
         )
 
         self.canvas.vertexSelected.connect(self.actions.removePoint.setEnabled)
@@ -862,6 +880,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 interpretableRegionMode,
                 segmentMode,
                 countIEL,
+                e2eMode,
             ),
         )
 
@@ -905,6 +924,7 @@ class MainWindow(QtWidgets.QMainWindow):
             interpretableRegionMode,
             segmentMode,
             countIEL,
+            e2eMode,
             None,
             ###################################################
             createMode,
@@ -1115,6 +1135,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.recentFiles.pop()
         self.recentFiles.insert(0, filename)
 
+    def toggleAllAIActionsDisabled(self):
+        for action in self.actions.aiActions:
+            action.setEnabled(False)
     # Callbacks
 
     def undoShapeEdit(self):
@@ -1352,6 +1375,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def lengthMeasurementMode(self, createMode = "linestrip"):
         self.mode = 'LM'
+
+        self.toggleAllAIActionsDisabled()
+        for action in self.actions.onLengthMeasurementModeActivation:
+            action.setEnabled(True)
+
         self.selectCalibrationOption()
         if self.mode == 'LM':
             self.toggleDrawMode(False, createMode='linestrip')
@@ -1432,7 +1460,12 @@ class MainWindow(QtWidgets.QMainWindow):
             all_labels.add(lbl)
         if "IR" not in all_labels:
             self.toggleDrawMode(False,createMode)
-        
+
+        self.toggleAllAIActionsDisabled()
+
+        for action in self.actions.onIRModeCompletion:
+            action.setEnabled(True)
+
     def get_trimask(self):
         img_name = self.openImage.split('/')[-1][:-4]
         mask_root = os.path.join(os.getcwd(),'temp_saver','masks',img_name)
@@ -1475,6 +1508,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.openJson = self.uniform_path(json_filename)
         self.display(json_filename)
 
+        self.toggleAllAIActionsDisabled()
+
+        for action in self.actions.onTissueModeCompletion:
+            action.setEnabled(True)
+
     def getCroppedImage(self):
         temp_save_dir = os.path.join(os.getcwd(),'temp_saver','results','cropped')
         if not os.path.exists(temp_save_dir):
@@ -1511,6 +1549,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.openJson = json_filename
 
         self.display(self.openJson)
+
+        self.toggleAllAIActionsDisabled()
+
+        for action in self.actions.onSegmentModeCompletion:
+            action.setEnabled(True)
 
     def get_corrected_interpretable_image_mask(self):
         temp_save_dir = os.path.join(os.getcwd(),'temp_saver','results','counting_images')
@@ -1576,6 +1619,59 @@ class MainWindow(QtWidgets.QMainWindow):
             self.statsDict['QHist'] = round(self.statsDict['Epithelial Nuclei']/self.statsDict['IEL'],3)
         except:
             self.statsDict['QHist'] = "-"
+
+    def e2eMode(self):
+        ## Segmentation into tissues
+        self.resetState()
+        json_filename, display_filename = magic(self.openImage)
+        self.openImage = self.uniform_path(display_filename)
+        self.openJson = self.uniform_path(json_filename)
+        self.display(self.openJson)
+
+
+        ## Get IR 
+        self.mode = 'IR'
+        self.resetRightColumn()
+        self.labelDialog.clearLabelHistory()
+        trimask_dir = self.get_trimask()
+        label_dir = ir_detection(trimask_dir)
+        json_gen_path = get_json_from_labels_ir(self.uniform_path(self.openImage),self.uniform_path(self.openJson),label_dir)
+        self.openJson = json_gen_path
+        self.display(self.openJson)
+        self.afterIRMode = True
+        
+
+        ## Villi Tip
+        self.resetRightColumn()
+        self.labelDialog.clearLabelHistory()
+        self.openImage = self.getCroppedImage()
+
+        self.resetState()
+        json_filename, segmented_filename, openImage_filename = infer(self.openImage)
+        
+        self.openImage = openImage_filename
+        self.openJson = json_filename
+
+        self.display(self.openJson)
+
+        #Clear 
+        self.resetRightColumn()
+        self.labelDialog.clearLabelHistory()
+
+        ipt_img_path = self.get_corrected_interpretable_image_mask()
+        ipt_img_path, patches_dir = create_patches(ipt_img_path)
+        label_dir = iel_detection(patches_dir)
+        filename = get_json_from_labels_iel(self.uniform_path(ipt_img_path),self.uniform_path(label_dir))
+        self.resetState()
+        self.display(filename)
+        
+        self.fillStatsAfterCounting()
+        self.calculateQHistScore()
+
+        self.addStats()
+        self.addStatsBool = True
+        self.afterIRMode = False
+
 
     def setEditMode(self):
         self.toggleDrawMode(True)
@@ -1677,8 +1773,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if not self.mayContinue():
             return
-
-        currIndex = self.imageList.index(str(item.text()))
+        searchPath = self.baseDirPath + str(item.text())
+        currIndex = self.imageList.index(searchPath)
         if currIndex < len(self.imageList):
             filename = self.imageList[currIndex]
             if filename:
@@ -2404,6 +2500,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._config["keep_prev"] = keep_prev
 
     def openFile(self, _value=False):
+        self.clearStats()
         if not self.mayContinue():
             return
         path = osp.dirname(str(self.filename)) if self.filename else "."
@@ -2682,7 +2779,8 @@ class MainWindow(QtWidgets.QMainWindow):
         lst = []
         for i in range(self.fileListWidget.count()):
             item = self.fileListWidget.item(i)
-            lst.append(item.text())
+            complete_image_path = self.baseDirPath+item.text()
+            lst.append(complete_image_path)
         return lst
 
     def importDroppedImageFiles(self, imageFiles):
@@ -2734,7 +2832,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.output_dir:
                 label_file_without_path = osp.basename(label_file)
                 label_file = osp.join(self.output_dir, label_file_without_path)
-            item = QtWidgets.QListWidgetItem(filename)
+            file_without_path = osp.basename(filename)
+            self.baseDirPath = self.uniform_path(filename[:-len(file_without_path)])
+            item = QtWidgets.QListWidgetItem(file_without_path)
             item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             if QtCore.QFile.exists(label_file) and LabelFile.is_label_file(
                 label_file
