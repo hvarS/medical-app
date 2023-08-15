@@ -9,9 +9,9 @@ a = Analysis(
     pathex=['anti_celiac'],
     binaries=[],
     datas=[
-        ('anti_celiac/config' , 'anti_celiac/config/unet_config.yaml'),
-        ('anti_celiac/config' , 'anti_celiac/config/default_config.yaml'),
-        ('anti_celiac/icons/*' , 'anti_celiac/icons'),
+        ('anti_celiac\\config' , 'anti_celiac\\config\\unet_config.yaml'),
+        ('anti_celiac\\config' , 'anti_celiac\\config\\default_config.yaml'),
+        ('anti_celiac\\icons\\*' , 'anti_celiac\\icons'),
     ],
     hiddenimports=[],
     hookspath=[],

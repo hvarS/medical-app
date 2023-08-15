@@ -112,53 +112,6 @@ def ch_dice_coeff(channel):
     return dice
 
 
-# def focal(alpha=0.25, gamma=1.5):
-#     """
-#     Create a functor for computing the focal loss.
-
-#     Args
-#         alpha: Scale the focal weight with alpha.
-#         gamma: Take the power of the focal weight with gamma.
-
-#     Returns
-#         A functor that computes the focal loss using the alpha and gamma.
-#     """
-
-#     def _focal(y_true, y_pred):
-#         """
-#         Compute the focal loss given the target tensor and the predicted tensor.
-
-#         As defined in https://arxiv.org/abs/1708.02002
-
-#         Args
-#             y_true: Tensor of target data from the generator with shape (B, gw, gh, 5).
-#             y_pred: Tensor of predicted data from the network with shape (B, gw, gh, 5).
-
-#         Returns
-#             The focal loss of y_pred w.r.t. y_true.
-#         """
-#         labels = y_true[..., -1]
-#         # -1 for ignore, 0 for background, 1 for object
-#         anchor_state = y_true[..., -1]
-#         classification = y_pred[..., -1]
-
-#         # compute the focal loss
-#         alpha_factor = K.ones_like(labels) * alpha
-#         alpha_factor = tf.where(K.equal(labels, 1), alpha_factor, 1 - alpha_factor)
-#         # (1 - 0.99) ** 2 = 1e-4, (1 - 0.9) ** 2 = 1e-2
-#         focal_weight = tf.where(K.equal(labels, 1), 1 - classification, classification)
-#         focal_weight = alpha_factor * focal_weight ** gamma
-#         cls_loss = focal_weight * K.binary_crossentropy(labels, classification)
-
-#         # compute the normalizer: the number of positive anchors
-#         normalizer = tf.where(K.equal(anchor_state, 1))
-#         normalizer = K.cast(K.shape(normalizer)[0], K.floatx())
-#         normalizer = K.maximum(K.cast_to_floatx(1.0), normalizer)
-
-#         return K.sum(cls_loss) / normalizer
-
-#     return _focal
-
 
 def total_squared_error(y_true, y_pred):
     return K.sum((y_true - y_pred)**2)
