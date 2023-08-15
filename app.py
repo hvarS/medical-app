@@ -841,6 +841,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ),
             onShapesPresent=(saveAs, hideAll, showAll),
             onLengthMeasurementModeActivation=(lengthMeasurementMode,),
+            onRecalibrationEnd=(undo,undoLastPoint,),
         )
 
         self.canvas.vertexSelected.connect(self.actions.removePoint.setEnabled)
@@ -1179,6 +1180,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def undoShapeEdit(self):
         canLoad = self.canvas.restoreShape()
         self.labelList.clear()
+        
         if canLoad:
             self.loadShapes(self.canvas.shapes)
             self.actions.undo.setEnabled(True)
@@ -1395,6 +1397,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.canvas.undoLastPoint()
         self.toggleDrawMode(False, createMode='linestrip')
         self.canvas.clearShapes()
+        for action in self.actions.onRecalibrationEnd:
+            action.setEnabled(False)
         self.mode = 'LM'
 
     def recalibrationMode(self):
@@ -1419,10 +1423,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selectCalibrationOption()
         if self.mode == 'LM':
             self.toggleDrawMode(False, createMode='linestrip')
+
         elif self.mode == "ANNOTATE":
             self.toggleDrawMode(False, createMode="linestrip")
 
     def actualMeasurement(self):
+
         clssdict = {}
         clsscnt = {}
 
