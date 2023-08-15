@@ -249,7 +249,7 @@ def parse_opt(img_dir):
     return opt
 
 
-from pyinstaller_relative import resource_path
+from anti_celiac.pyinstaller_relative import resource_path
 
 
 def main(opt):

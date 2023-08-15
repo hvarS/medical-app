@@ -23,7 +23,7 @@ import cv2
 import json 
 import yaml
 
-CFG_FILE = resource_path('config/unet_config.yaml')
+CFG_FILE = resource_path('anti_celiac/config/unet_config.yaml')
 CKPT = resource_path('../../weights/weights16.h5')
 THRESHOLD = 0.5
 TEMP_JSON_SAVE_LOC = resource_path(os.path.join(os.getcwd(),'temp_saver','tissue_annotations'))

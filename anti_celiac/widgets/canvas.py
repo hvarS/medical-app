@@ -2,7 +2,7 @@ from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtWidgets
 
-from __init__ import QT5
+from anti_celiac.__init__ import QT5
 from anti_celiac.shape import Shape
 import anti_celiac.widgets.utils as utils
 

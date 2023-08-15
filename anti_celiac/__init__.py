@@ -36,6 +36,3 @@ CALIBRATE = [CALIBRATION_CONSTANT_4X,
 
 del sys
 
-from anti_celiac.label_file import LabelFile
-from anti_celiac import testing
-from anti_celiac import utils

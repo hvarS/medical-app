@@ -9,7 +9,7 @@ if os.name == "nt":  # Windows
 
     colorama.init()
 
-from __init__ import __appname__
+from anti_celiac.__init__ import __appname__
 
 
 COLORS = {

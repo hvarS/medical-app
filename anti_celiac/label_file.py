@@ -12,7 +12,7 @@ from anti_celiac import PY2
 from anti_celiac import QT4
 from anti_celiac import utils
 
-from tiff_loader import tiff_parser
+from anti_celiac.tiff_loader import tiff_parser
 
 
 PIL.Image.MAX_IMAGE_PIXELS = None
