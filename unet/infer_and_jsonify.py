@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import ParameterGrid
 import tensorflow as tf
 from tqdm import tqdm
+from pyinstaller_relative import resource_path
 
 import labelme 
 import base64
@@ -22,12 +23,12 @@ import cv2
 import json 
 import yaml
 
-CFG_FILE = 'config/unet_config.yaml'
-CKPT = '../../weights/weights16.h5'
+CFG_FILE = resource_path('config/unet_config.yaml')
+CKPT = resource_path('../../weights/weights16.h5')
 THRESHOLD = 0.5
-TEMP_JSON_SAVE_LOC = os.path.join(os.getcwd(),'temp_saver','tissue_annotations')
-DISPLAY_TEMP_SAVE = os.path.join(os.getcwd(),'temp_saver','display')
-MASKS_TEMP_SAVE = os.path.join(os.getcwd(),'temp_saver','masks')
+TEMP_JSON_SAVE_LOC = resource_path(os.path.join(os.getcwd(),'temp_saver','tissue_annotations'))
+DISPLAY_TEMP_SAVE = resource_path(os.path.join(os.getcwd(),'temp_saver','display'))
+MASKS_TEMP_SAVE = resource_path(os.path.join(os.getcwd(),'temp_saver','masks'))
 
 cfg = yaml.full_load(open(CFG_FILE,'r'))
 num_classes = len(cfg["target_classes"])
@@ -139,7 +140,7 @@ def magic(img_path):
     img = img.resize((w, h))
     # Preprocessing images
     display_img_resized = img.resize(display_image_size)
-    display_image_save_path = os.path.join(DISPLAY_TEMP_SAVE, img_name+'.png')
+    display_image_save_path = resource_path(os.path.join(DISPLAY_TEMP_SAVE, img_name+'.png'))
     display_img_resized.save(display_image_save_path)
 
     img_resized = img.resize(test_image_size)
@@ -180,7 +181,7 @@ def magic(img_path):
 
     for seg_threshold in (param_grid):
         # seg_threshold = np.array(list(seg_threshold.values()))
-        common_mask_dir = os.path.join(MASKS_TEMP_SAVE,img_name)
+        common_mask_dir = resource_path(os.path.join(MASKS_TEMP_SAVE,img_name))
         if not os.path.exists(common_mask_dir):
             os.makedirs(common_mask_dir)
         """Processing the predictions for segmentation"""
@@ -197,7 +198,7 @@ def magic(img_path):
             
             thresh = cv2.resize(thresh,display_image_size)
 
-            mask_file_path = os.path.join(new_mask_dir,img_name+'.png')
+            mask_file_path = resource_path(os.path.join(new_mask_dir,img_name+'.png'))
             cv2.imwrite(mask_file_path,thresh)
 
             contours = get_contours(predicted_mask)
@@ -222,7 +223,7 @@ def magic(img_path):
     #     combined_img.save(os.path.join('./Results',f'Generated_{display_image_size[0]}_{display_image_size[1]}.png'))
 
     """Save the Json Dumped as a string"""
-    json_file_location = os.path.join(TEMP_JSON_SAVE_LOC,img_name+'.json')
+    json_file_location = resource_path(os.path.join(TEMP_JSON_SAVE_LOC,img_name+'.json'))
     with open(json_file_location,'w') as f:
         f.write(json_object)
 

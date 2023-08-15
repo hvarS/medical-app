@@ -5,3 +5,5 @@ temp_saver/*/*/*/*.png
 temp_saver/*/*/*.json
 temp_saver/*/*/*.png
 temp_saver/*/*.json
+build/*
+dist/*

@@ -5,6 +5,7 @@ import os
 import cv2
 import argparse
 import sys
+from pyinstaller_relative import resource_path
 from caranet.utils.dataloader import get_loader, test_dataset, inference_dataset
 import torch.nn.functional as F
 import numpy as np
@@ -14,6 +15,7 @@ from collections import OrderedDict
 import json
 import labelme
 import base64
+
 
 save_imgs = True # if False, then just predict segmentation masks, otherwise predict masked image
 
@@ -89,10 +91,10 @@ class Inference_Villi:
 
 def infer(img_location):
     #checking the inference
-    model_save_path = '../../weights/CaraNet-best_84.pth'
-    temp_save_dir = os.path.join(os.getcwd(),'temp_saver','results','segmented_images')
-    temp_resized_save_dir = os.path.join(os.getcwd(),'temp_saver','results','interpretable_resized')
-    temp_json_save_dir = os.path.join(os.getcwd(),'temp_saver','results','annotations')
+    model_save_path = resource_path('../../weights/CaraNet-best_84.pth')
+    temp_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','segmented_images'))
+    temp_resized_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','interpretable_resized'))
+    temp_json_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','annotations'))
     
     if not os.path.exists(temp_save_dir):
         os.makedirs(temp_save_dir)

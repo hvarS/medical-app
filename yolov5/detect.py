@@ -249,6 +249,9 @@ def parse_opt(img_dir):
     return opt
 
 
+from pyinstaller_relative import resource_path
+
+
 def main(opt):
     check_requirements(exclude=('tensorboard', 'thop'))
     return run(**vars(opt))
@@ -256,12 +259,12 @@ def main(opt):
 
 def iel_detection(img_dir):
     opt = parse_opt(img_dir)
-    opt.weights = '../../weights/best.pt'
+    opt.weights = resource_path('../../weights/best.pt')
     save_dir_labels = main(opt)
-    return os.path.join(save_dir_labels,'labels')
+    return resource_path(os.path.join(save_dir_labels,'labels'))
 
 def ir_detection(img_dir):
     opt = parse_opt(img_dir)
-    opt.weights = '../../weights/yolo_mask_to_ir.pt'
+    opt.weights = resource_path('../../weights/yolo_mask_to_ir.pt')
     save_dir_labels = main(opt)
-    return os.path.join(save_dir_labels,'labels')
+    return resource_path(os.path.join(save_dir_labels,'labels'))

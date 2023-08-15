@@ -118,10 +118,11 @@ def color_rectangle(clss, img, start_x, start_y, height, width) -> dict:
     return shape
 
 
+from pyinstaller_relative import resource_path
 
 def get_json_from_labels_iel(image_file_path:str, labels_path):
     
-    temp_save_dir = os.path.join(os.getcwd(),'temp_saver','results','counting_annotations')
+    temp_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','counting_annotations'))
     if not os.path.exists(temp_save_dir):
         os.makedirs(temp_save_dir)
 
@@ -207,7 +208,7 @@ def get_json_from_labels_iel(image_file_path:str, labels_path):
     json_saver["shapes"] = shapes
     json_object = json.dumps(json_saver) 
 
-    json_save_path = os.path.join(temp_save_dir,img_name+'_iel.json')
+    json_save_path = resource_path(os.path.join(temp_save_dir,img_name+'_iel.json'))
     with open(json_save_path,'w') as f:
         f.write(json_object)
     
@@ -215,7 +216,7 @@ def get_json_from_labels_iel(image_file_path:str, labels_path):
 
 def get_json_from_labels_ir(image_file_path:str, json_file_path, labels_path):
 
-    temp_save_dir = os.path.join(os.getcwd(),'temp_saver','ir_annotations')
+    temp_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','ir_annotations'))
     if not os.path.exists(temp_save_dir):
         os.makedirs(temp_save_dir)
 
@@ -241,7 +242,7 @@ def get_json_from_labels_ir(image_file_path:str, json_file_path, labels_path):
 
     for label_file_path in label_files:
 
-        label_file = open(os.path.join(labels_path,label_file_path),'r')
+        label_file = open(resource_path(os.path.join(labels_path,label_file_path)),'r')
         
         max_confidence_score = 0
 
@@ -275,7 +276,7 @@ def get_json_from_labels_ir(image_file_path:str, json_file_path, labels_path):
 
     json_object = json.dumps(json_saver) 
 
-    json_save_path = os.path.join(temp_save_dir,img_name+'_ir.json')
+    json_save_path = resource_path(os.path.join(temp_save_dir,img_name+'_ir.json'))
     with open(json_save_path,'w') as f:
         f.write(json_object)
     

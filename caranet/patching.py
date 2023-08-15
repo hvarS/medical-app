@@ -1,9 +1,9 @@
 import cv2
 import os
 from PIL import Image
-
-save_dir = os.path.join(os.getcwd(),'temp_saver','results','patched_results')
-interpretable_dir = os.path.join(os.getcwd(),'temp_saver','results','interpretable_images')
+from pyinstaller_relative import resource_path
+save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','patched_results'))
+interpretable_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','interpretable_images'))
 
 def create_patches(image_path):
     img = cv2.imread(image_path)
@@ -20,11 +20,11 @@ def create_patches(image_path):
 
     ## Save Bigger Image 
     img_name = image_path.split('\\')[-1][:-4]
-    patch_img_path_dir = os.path.join(save_dir,img_name)
+    patch_img_path_dir = resource_path(os.path.join(save_dir,img_name))
 
     if not os.path.exists(patch_img_path_dir):
         os.makedirs(patch_img_path_dir)
-    spath = os.path.join(save_dir, img_name+ '.png')
+    spath = resource_path(os.path.join(save_dir, img_name+ '.png'))
     ipt_img_path = spath
     img.save(spath)
 
@@ -39,7 +39,7 @@ def create_patches(image_path):
     grid = product(range(0, h-h%d, d), range(0, w-w%d, d))
     for i, j in grid:
         box = (j, i, j+d, i+d)
-        spath = os.path.join(patch_img_path_dir , img_name + '_{}.png'.format(k))
+        spath = resource_path(os.path.join(patch_img_path_dir , img_name + '_{}.png'.format(k)))
         img.crop(box).save(spath)
         k += 1
 
