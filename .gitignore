@@ -7,3 +7,4 @@ temp_saver/*/*/*.png
 temp_saver/*/*.json
 build/*
 dist/*
+anti_celiac/yolov5/runs/*

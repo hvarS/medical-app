@@ -48,7 +48,7 @@ from anti_celiac.caranet.inference import infer
 from anti_celiac.caranet.patching import create_patches
 from anti_celiac.yolov5.detect import iel_detection, ir_detection
 from anti_celiac.yolov5.LabelConverter import get_json_from_labels_iel, get_json_from_labels_ir
-from anti_celiac.unet import magic
+from anti_celiac.unet.infer_and_jsonify import magic
 
 # FIXME
 # - [medium] Set max zoom value to something big enough for FitWidth/Window
