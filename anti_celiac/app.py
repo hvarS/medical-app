@@ -309,6 +309,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addStatsBool = False
         self.statsDict = {}
         
+        developerMode = action(
+            self.tr("&Dev Mode"),
+            self.devMode,
+            None,
+            None,
+            tip = self.tr("Open up disabled AI Actions"),
+            enabled = False,
+        )
+
+
         segmentMode = action(
             self.tr("&Villi Tip"),
             self.segmentMode,
@@ -809,6 +819,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 recalibrationMode,
                 tissueMode,
                 e2eMode,
+                developerMode,
             ),
             onLoadActive=(
                 close,
@@ -825,6 +836,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 recalibrationMode,
                 tissueMode,
                 e2eMode,
+                developerMode,
             ),
             onTissueModeCompletion=(
                 interpretableRegionMode,
@@ -844,6 +856,14 @@ class MainWindow(QtWidgets.QMainWindow):
             onShapesPresent=(saveAs, hideAll, showAll),
             onLengthMeasurementModeActivation=(lengthMeasurementMode,),
             onRecalibrationEnd=(undo,undoLastPoint,),
+            onDevModeClick=(
+                tissueMode,
+                interpretableRegionMode,
+                resetAIAction,
+                lengthMeasurementMode,
+                countIEL,
+                segmentMode,
+            ),
         )
 
         self.canvas.vertexSelected.connect(self.actions.removePoint.setEnabled)
@@ -915,6 +935,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 segmentMode,
                 countIEL,
                 e2eMode,
+                developerMode,
             ),
         )
 
@@ -2961,3 +2982,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     images.append(relativePath)
         images = natsort.os_sorted(images)
         return images
+    
+
+    def devMode(self):
+        for action in self.actions.onDevModeClick:
+            action.setEnabled(True)
