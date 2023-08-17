@@ -29,3 +29,9 @@ Follow these instructions to set up and use the Celiac Detection IITD-AIIMS proj
 2. Install the dependencies from 'requirements.txt':
     ```bash
    pip install -r requirements.txt
+
+### Usage 
+
+Follow the below steps to run the app on your local machine:
+
+1. 
