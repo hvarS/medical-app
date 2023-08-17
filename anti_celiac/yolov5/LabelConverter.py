@@ -7,6 +7,8 @@ import fnmatch
 import labelme
 import base64
 import json
+from anti_celiac.unifier import uniform_path
+
 
 
 CLASS_MAPPING = {
@@ -171,7 +173,7 @@ def get_json_from_labels_iel(image_file_path:str, labels_path):
     img = Image.fromarray(img)
 
     np_img = np.array(img)
-    img_name = image_file_path.split("/")[-1].split('.')[0]
+    img_name = uniform_path(image_file_path).split("/")[-1].split('.')[0]
 
     label_files = []
     shapes = []
@@ -184,7 +186,7 @@ def get_json_from_labels_iel(image_file_path:str, labels_path):
 
 
         label_file = open(os.path.join(labels_path,label_file_path),'r')
-        idx = int(label_file_path.split('/')[-1].split('.')[0].split('_')[-1])
+        idx = int(uniform_path(label_file_path).split('/')[-1].split('.')[0].split('_')[-1])
 
         for i,line in enumerate(label_file):
             clss, y, x, width, height , confidence_score = line.split(' ')        
