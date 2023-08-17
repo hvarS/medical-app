@@ -43,6 +43,7 @@ from anti_celiac.widgets import ZoomWidget
 from anti_celiac.widgets import LoadingThread, LoadingTranslucentScreen
 from anti_celiac.widgets import calibrationSelection
 from anti_celiac.widgets import calibrationSet
+from anti_celiac.unifier import uniform_path
 
 from anti_celiac.caranet.inference import infer
 from anti_celiac.caranet.patching import create_patches
@@ -1503,7 +1504,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelDialog.clearLabelHistory()
         trimask_dir = self.get_trimask()
         label_dir = ir_detection(trimask_dir)
-        json_gen_path = get_json_from_labels_ir(self.uniform_path(self.openImage),self.uniform_path(self.openJson),label_dir)
+        json_gen_path = get_json_from_labels_ir(uniform_path(self.openImage),uniform_path(self.openJson),label_dir)
         self.openJson = json_gen_path
         self.display(json_gen_path)
         self.afterIRMode = True
@@ -1549,19 +1550,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return trimask_save_path
 
-    def uniform_path(self, img_path):
-        if os.name=='nt':
-            return '/'.join(img_path.split('\\'))
-        else:
-            return img_path
 
     def tissueMode(self):
         """Addition: In Progress"""
         self.resetState()
         self.originalOpenImage = copy.deepcopy(self.openImage)
         json_filename, display_filename = magic(self.openImage)
-        self.openImage = self.uniform_path(display_filename)
-        self.openJson = self.uniform_path(json_filename)
+        self.openImage = uniform_path(display_filename)
+        self.openJson = uniform_path(json_filename)
         self.display(json_filename)
 
         self.toggleAllAIActionsDisabled()
@@ -1605,6 +1601,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.openImage = openImage_filename
         self.openJson = json_filename
 
+
         self.display(self.openJson)
 
         self.toggleAllAIActionsDisabled()
@@ -1619,13 +1616,16 @@ class MainWindow(QtWidgets.QMainWindow):
             os.makedirs(temp_save_dir)
 
         img = cv2.imread(self.openImage)
-        img_name = self.openImage.split('/')[-1][:-4] 
+        img_name = uniform_path(self.openImage).split('/')[-1][:-4]
+
         
         w, h = self.canvas.pixmap.width(), self.canvas.pixmap.height()
         mask_array = np.zeros((w,h),dtype=np.int32)
         
+
         for shape in self.canvas.shapes:
             points = shape.points
+            print(points)
             contour = []
             for point in points:
                 contour.append([int(point.x()),int(point.y())])
@@ -1651,7 +1651,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ipt_img_path = self.get_corrected_interpretable_image_mask()
         ipt_img_path, patches_dir = create_patches(ipt_img_path)
         label_dir = iel_detection(patches_dir)
-        filename = get_json_from_labels_iel(self.uniform_path(ipt_img_path),self.uniform_path(label_dir))
+        filename = get_json_from_labels_iel(uniform_path(ipt_img_path),uniform_path(label_dir))
         self.resetState()
         self.display(filename)
         
@@ -1689,8 +1689,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resetState()
         self.originalOpenImage = copy.deepcopy(self.openImage)
         json_filename, display_filename = magic(self.openImage)
-        self.openImage = self.uniform_path(display_filename)
-        self.openJson = self.uniform_path(json_filename)
+        self.openImage = uniform_path(display_filename)
+        self.openJson = uniform_path(json_filename)
         self.display(self.openJson)
 
 
@@ -1700,7 +1700,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelDialog.clearLabelHistory()
         trimask_dir = self.get_trimask()
         label_dir = ir_detection(trimask_dir)
-        json_gen_path = get_json_from_labels_ir(self.uniform_path(self.openImage),self.uniform_path(self.openJson),label_dir)
+        json_gen_path = get_json_from_labels_ir(uniform_path(self.openImage),uniform_path(self.openJson),label_dir)
         self.openJson = json_gen_path
         self.display(self.openJson)
         self.afterIRMode = True
@@ -1726,7 +1726,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ipt_img_path = self.get_corrected_interpretable_image_mask()
         ipt_img_path, patches_dir = create_patches(ipt_img_path)
         label_dir = iel_detection(patches_dir)
-        filename = get_json_from_labels_iel(self.uniform_path(ipt_img_path),self.uniform_path(label_dir))
+        filename = get_json_from_labels_iel(uniform_path(ipt_img_path),uniform_path(label_dir))
         self.resetState()
         self.display(filename)
         
@@ -2931,7 +2931,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 label_file_without_path = osp.basename(label_file)
                 label_file = osp.join(self.output_dir, label_file_without_path)
             file_without_path = osp.basename(filename)
-            self.baseDirPath = self.uniform_path(filename[:-len(file_without_path)])
+            self.baseDirPath = uniform_path(filename[:-len(file_without_path)])
             item = QtWidgets.QListWidgetItem(file_without_path)
             item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
             if QtCore.QFile.exists(label_file) and LabelFile.is_label_file(

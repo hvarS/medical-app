@@ -15,6 +15,7 @@ from collections import OrderedDict
 import json
 import labelme
 import base64
+from anti_celiac.unifier import uniform_path
 
 
 save_imgs = True # if False, then just predict segmentation masks, otherwise predict masked image
@@ -108,7 +109,7 @@ def infer(img_location):
     # Jsonify Output File
     image_path = img_location
 
-    img_name = img_location.split('/')[-1][:-4]
+    img_name = uniform_path(img_location).split('/')[-1][:-4]
     
 
 
@@ -210,6 +211,8 @@ def infer(img_location):
     f.close()
 
     img_path  = os.path.join(temp_save_dir,img_name+'.png')
+
+    print(json_path,img_path, temp_resized_image_path)
 
     return json_path, img_path, temp_resized_image_path
 

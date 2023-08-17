@@ -7,6 +7,6 @@ setup(
     description="AI App to detect tissue, segment them, count IELs and measure image annotations",
     executables=
         [
-            Executable("test_app.py")
+            Executable("run_app.py")
         ]
 )
