@@ -22,9 +22,10 @@ import base64
 import cv2
 import json 
 import yaml
+from anti_celiac.unifier import uniform_path
 
 CFG_FILE = resource_path('anti_celiac/config/unet_config.yaml')
-CKPT = resource_path('..\..\weights\weights16.h5')
+CKPT = resource_path(uniform_path('weights/weights16.h5'))
 THRESHOLD = 0.5
 TEMP_JSON_SAVE_LOC = resource_path(os.path.join(os.getcwd(),'temp_saver','tissue_annotations'))
 DISPLAY_TEMP_SAVE = resource_path(os.path.join(os.getcwd(),'temp_saver','display'))

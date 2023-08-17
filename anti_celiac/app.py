@@ -1557,8 +1557,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def tissueMode(self):
         """Addition: In Progress"""
         self.resetState()
-        self.originalOpenImage = copy.deepcopy(self.openImage)
-        json_filename, display_filename = magic(self.openImage)
+        self.originalOpenImage = copy.deepcopy(uniform_path(self.openImage))
+        json_filename, display_filename = magic(uniform_path(self.openImage))
         self.openImage = uniform_path(display_filename)
         self.openJson = uniform_path(json_filename)
         self.display(json_filename)
@@ -1574,8 +1574,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if not os.path.exists(temp_save_dir):
             os.makedirs(temp_save_dir)
 
-        img = cv2.imread(self.openImage)
-        img_name = self.openImage.split('/')[-1][:-4]
+        img = cv2.imread(uniform_path(self.openImage))
+        img_name = uniform_path(self.openImage).split('/')[-1][:-4]
 
         for shape in self.canvas.shapes:
             label = shape.label
@@ -1599,13 +1599,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.openImage = self.getCroppedImage()
 
         self.resetState()
-        json_filename, segmented_filename, openImage_filename = infer(self.openImage)
+        json_filename, segmented_filename, openImage_filename = infer(uniform_path(self.openImage))
         
         self.openImage = openImage_filename
         self.openJson = json_filename
 
 
-        self.display(self.openJson)
+        self.display(uniform_path(self.openJson))
 
         self.toggleAllAIActionsDisabled()
         self.toggleAllMeasurementActionsDisabled()
@@ -1618,7 +1618,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if not os.path.exists(temp_save_dir):
             os.makedirs(temp_save_dir)
 
-        img = cv2.imread(self.openImage)
+        img = cv2.imread(uniform_path(self.openImage))
         img_name = uniform_path(self.openImage).split('/')[-1][:-4]
 
         
@@ -1628,7 +1628,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for shape in self.canvas.shapes:
             points = shape.points
-            print(points)
             contour = []
             for point in points:
                 contour.append([int(point.x()),int(point.y())])
@@ -1652,7 +1651,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelDialog.clearLabelHistory()
 
         ipt_img_path = self.get_corrected_interpretable_image_mask()
-        ipt_img_path, patches_dir = create_patches(ipt_img_path)
+        ipt_img_path, patches_dir = create_patches(uniform_path(ipt_img_path))
         label_dir = iel_detection(patches_dir)
         filename = get_json_from_labels_iel(uniform_path(ipt_img_path),uniform_path(label_dir))
         self.resetState()

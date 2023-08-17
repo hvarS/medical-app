@@ -92,7 +92,7 @@ class Inference_Villi:
 
 def infer(img_location):
     #checking the inference
-    model_save_path = resource_path('../../weights/CaraNet-best_84.pth')
+    model_save_path = resource_path('weights/CaraNet-best_84.pth')
     temp_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','segmented_images'))
     temp_resized_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','interpretable_resized'))
     temp_json_save_dir = resource_path(os.path.join(os.getcwd(),'temp_saver','results','annotations'))
@@ -211,8 +211,6 @@ def infer(img_location):
     f.close()
 
     img_path  = os.path.join(temp_save_dir,img_name+'.png')
-
-    print(json_path,img_path, temp_resized_image_path)
 
     return json_path, img_path, temp_resized_image_path
 

@@ -217,7 +217,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
 def parse_opt(img_dir):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default= '../../weights/best.pt', help='model path(s)')
+    parser.add_argument('--weights', nargs='+', type=str, default= 'weights/best.pt', help='model path(s)')
     parser.add_argument('--source', type=str, default= img_dir, help='file/dir/URL/glob, 0 for webcam')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
@@ -259,12 +259,12 @@ def main(opt):
 
 def iel_detection(img_dir):
     opt = parse_opt(img_dir)
-    opt.weights = resource_path('../../weights/best.pt')
+    opt.weights = resource_path('weights/best.pt')
     save_dir_labels = main(opt)
     return resource_path(os.path.join(save_dir_labels,'labels'))
 
 def ir_detection(img_dir):
     opt = parse_opt(img_dir)
-    opt.weights = resource_path('../../weights/yolo_mask_to_ir.pt')
+    opt.weights = resource_path('weights/yolo_mask_to_ir.pt')
     save_dir_labels = main(opt)
     return resource_path(os.path.join(save_dir_labels,'labels'))

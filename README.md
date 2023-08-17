@@ -18,6 +18,7 @@ Follow these instructions to set up and use the Celiac Detection IITD-AIIMS proj
 
 ### Prerequisites
 
+- Ubuntu / Windows
 - conda
 - Python 3.9
 
@@ -37,6 +38,12 @@ Follow these instructions to set up and use the Celiac Detection IITD-AIIMS proj
    pip install -r requirements.txt
 ### Usage 
 
+#### Note 
+Before usage, please download the model and add the weights to the project directory 
+Use:
+`mkdir weights`
+
+
 Follow the below steps to run the app on your local machine:
 
 1. Activate the 'anti-celiac' environment:
@@ -55,3 +62,14 @@ We welcome contributions from the community to enhance the Celiac Detection IITD
 3. Make your changes and commit them: `git commit -m "Add some feature"`.
 4. Push to the branch: `git push origin feature-name`.
 5. Create a pull request describing your changes.
+
+
+### Error Handling
+Change:
+    ```bash
+    return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners,
+    recompute_scale_factor=self.recompute_scale_factor)
+To:
+    ```bash
+  return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners)
+# recompute_scale_factor=self.recompute_scale_factor)
