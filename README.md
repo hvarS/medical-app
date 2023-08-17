@@ -6,8 +6,10 @@ Celiac Detection IITD-AIIMS is a project focused on the detection of celiac dise
 ## Features
 
 - Feature 1: Accurate celiac disease prediction
-- Feature 2: Efficient AI-powered analysis
-- Feature 3: User-friendly interface
+- Feature 2: Image Calibration module
+- Feature 3: Image Annotation Measurement 
+- Feature 4: Efficient AI-powered analysis
+- Feature 5: User-friendly interface
 
 
 ## Getting Started
@@ -22,16 +24,34 @@ Follow these instructions to set up and use the Celiac Detection IITD-AIIMS proj
 
 ### Installation
 
-1. Create a Conda environment named 'anti-celiac':
+1. Clone the repository and move to the project directory:
+   ```bash
+   git clone https://github.com/hvarS/medical-app.git
+   cd medical-app
+2. Create a Conda environment named 'anti-celiac':
    ```bash
    conda create -n anti-celiac python=3.9
    conda activate anti-celiac
-2. Install the dependencies from 'requirements.txt':
+3. Install the dependencies from 'requirements.txt':
     ```bash
    pip install -r requirements.txt
-
 ### Usage 
 
 Follow the below steps to run the app on your local machine:
 
-1. 
+1. Activate the 'anti-celiac' environment:
+    ```bash
+    conda activate anti-celiac
+2. Run the app:
+    ```bash
+    python run_app.py
+
+### Contributing
+
+We welcome contributions from the community to enhance the Celiac Detection IITD-AIIMS project. To contribute, follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature: `git checkout -b feature-name`.
+3. Make your changes and commit them: `git commit -m "Add some feature"`.
+4. Push to the branch: `git push origin feature-name`.
+5. Create a pull request describing your changes.
