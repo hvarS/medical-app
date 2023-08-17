@@ -943,23 +943,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tools = self.toolbar("Tools")
         # Menu buttons on Left
         self.actions.tool = (
-            open_,
             opendir,
             openNextImg,
             openPrevImg,
-            save,
-            deleteFile,
             None,
             ##################################################
             lengthMeasurementMode,
             None,
             ###################################################
-            resetAIAction,
             tissueMode,
             interpretableRegionMode,
             segmentMode,
             countIEL,
             e2eMode,
+            resetAIAction,
+            None,
+            ###################################################
+            open_,
+            save,
+            deleteFile,
             None,
             ###################################################
             createMode,
@@ -971,6 +973,7 @@ class MainWindow(QtWidgets.QMainWindow):
             undo,
             brightnessContrast,
             None,
+            ##################################################
             zoom,
             fitWidth,
         )
