@@ -65,11 +65,14 @@ We welcome contributions from the community to enhance the Celiac Detection IITD
 
 
 ### Error Handling
+1. Torch Scaling Factor Error
 Change:
-    ```bash
-    return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners,
-    recompute_scale_factor=self.recompute_scale_factor)
+```
+return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners,
+recompute_scale_factor=self.recompute_scale_factor)
+```
 To:
-    ```bash
+```
   return F.interpolate(input, self.size, self.scale_factor, self.mode, self.align_corners)
 # recompute_scale_factor=self.recompute_scale_factor)
+```
