@@ -5,7 +5,9 @@ temp_saver/*/*/*/*.png
 temp_saver/*/*/*.json
 temp_saver/*/*/*.png
 temp_saver/*/*.json
-weights/*
+weights/*.pt
+weights/*.h5
+weights/*.pth
 build/*
 dist/*
 anti_celiac/yolov5/runs/*
